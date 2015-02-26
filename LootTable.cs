@@ -60,9 +60,9 @@ public class LootTable {
     public Loot Choose() {
         if (this.table.Count == 0) return null;
         
-        int i;
-        Loot v;
+        int i;        
         int totalWeight = 0;
+        Loot v;
 
         for (i = 0; i < this.table.Count; i++) {
             v = this.table[i];
@@ -72,8 +72,8 @@ public class LootTable {
         }
 
         int choice = 0;
-        float randomNumber = Mathf.Floor(Random.value * totalWeight + 1);
         int weight = 0;
+        float randomNumber = Mathf.Floor(Random.value * totalWeight + 1);
 
         for (i = 0; i < this.table.Count; i++) {
             v = this.table[i];
