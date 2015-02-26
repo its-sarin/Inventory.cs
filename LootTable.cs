@@ -16,14 +16,13 @@
  * Example:
  *
  * LootTable lt = new LootTable();
- * lt.add(new Loot("sword", 20));
- * lt.add(new Loot("shield", 5));
- * lt.add(new Loot("gold", 100));
+ * lt.Add(new Loot("sword", 20));
+ * lt.Add(new Loot("shield", 5));
+ * lt.Add(new Loot("gold", 100));
  * 
  * Loot item = lt.Choose(); // most likely gold
  */
 
-using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
 
@@ -44,8 +43,8 @@ public class LootTable : MonoBehaviour {
      *
      * Weights are arbitrary, not percentages, and don't need to add up to 100.
      * If one item has a weight of 2 and another has a weight of 1, the first item
-     * is twice as likely to be chosen. If quantity is given, then calls to choose()
-     * will only return that item while some are available. Each choose() that
+     * is twice as likely to be chosen. If quantity is given, then calls to Choose()
+     * will only return that item while some are available. Each Choose() that
      * selects that item will reduce its quantity by 1.
      *
      * 
