@@ -2,7 +2,7 @@
  * Rebuilt in C# by Tony Recchia (@then00b)
  * 
  * Based on LootTable.js by John Watson (Copyright © 2015)
- * https://github.com/jotson/LootTable.js/blob/master/LootTable.js
+ * https://github.com/jotson/LootTable.js
  * 
  * Licensed under the terms of the MIT License
  * ---

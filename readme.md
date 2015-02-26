@@ -1,7 +1,7 @@
 # LootTable.cs
  
 Based on LootTable.js by John Watson (Copyright © 2015)
-https://github.com/jotson/LootTable.js/blob/master/LootTable.js
+https://github.com/jotson/LootTable.js
 
 LootTable is used to make a random choice among a weighted list of alternatives for item drops,
 map generation, and many other processes. There's a good overview of loot tables on
