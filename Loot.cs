@@ -16,7 +16,7 @@
 
 using System.Collections;
 
-public class Loot : MonoBehaviour {
+public class Loot {
 
 	private string name;
     private int weight;

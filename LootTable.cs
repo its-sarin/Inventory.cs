@@ -26,7 +26,7 @@
 using System.Collections;
 using System.Collections.Generic;
 
-public class LootTable : MonoBehaviour {
+public class LootTable {
 
     private List<Loot> table;
 
