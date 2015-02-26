@@ -21,6 +21,7 @@
  * lt.Add(new Loot("gold", 100));
  * 
  * Loot item = lt.Choose(); // most likely gold
+ * string itemName = item.Name; // "gold"
  */
 
 using System.Collections;
@@ -55,10 +56,8 @@ public class LootTable {
         this.table.Add(loot);
     }
 
-    /* Choose a Loot object from the LootTable based on its weight. 
-     * Returns the string Name of the Loot
-     */
-    public string Choose() {
+    /* Choose and returns a Loot object from the LootTable based on its weight. */
+    public Loot Choose() {
         if (this.table.Count == 0) return null;
         
         int i;
@@ -90,6 +89,6 @@ public class LootTable {
         Loot chosenItem = this.table[choice];
         this.table[choice].Quantity--;
 
-        return chosenItem.Name;
+        return chosenItem;
     }
 }
