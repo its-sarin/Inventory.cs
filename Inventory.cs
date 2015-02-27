@@ -1,4 +1,35 @@
-﻿using UnityEngine;
+﻿/**
+ * Inventory.cs by Tony Recchia (@then00b)
+ * Inventory class for use with LootTable.cs and Loot.cs
+ * 
+ * LootTable.cs is based on LootTable.js by John Watson (Copyright © 2015)
+ * https://github.com/jotson/LootTable.js/blob/master/LootTable.js
+ * 
+ * Licensed under the terms of the MIT License
+ * ---
+ * 
+ * Inventory.cs is meant to be used in conjunction with Loot.cs and
+ * optionally LootTable.cs.
+ *
+ * Example:
+ * 
+ * LootTable lt = new LootTable();
+ * Inventory inv = new Inventory();
+ * 
+ * lt.Add(new Loot("sword", 20));
+ * lt.Add(new Loot("shield", 5));
+ * lt.Add(new Loot("gold", 100));
+ * 
+ * Loot item = lt.Choose(); // most likely gold
+ * 
+ * inv.Add(item); // Adds loot stored in item variable to this inventory
+ * inv.Add(lt.Choose()); // Adds loot randomly chosen from LootTable to this inventory
+ * 
+ * inv.Contains(item); // Returns 'true'
+ * inv.Count(item); // Returns 1;
+ * 
+ */
+
 using System.Collections;
 using System.Collections.Generic;
 
