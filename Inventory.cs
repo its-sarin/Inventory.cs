@@ -46,9 +46,11 @@ public class Inventory {
         this.table.Clear();
     }
 
-    // Add a piece of loot to inventory
-    public void Add(Loot loot) {
+    // Add a piece of loot to inventory. Returns the added Loot object
+    public Loot Add(Loot loot) {
         this.table.Add(loot);
+
+        return loot;
     }
 
     // Remove a piece of loot from inventory
