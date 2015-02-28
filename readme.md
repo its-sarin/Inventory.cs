@@ -8,11 +8,13 @@ The Loot.cs System consists of three core classes:
 (LootTable.cs is based on LootTable.js by John Watson (Copyright © 2015)
 https://github.com/jotson/LootTable.js)
 
+## LootTable.cs
+
 LootTable.cs is used to make a random choice among a weighted list of alternatives for item drops,
 map generation, and many other processes. There's a good overview of loot tables on
 [Lost Garden](http://www.lostgarden.com/2014/12/loot-drop-tables.html).
 
-## Example
+### Example
 
 ```c#
 LootTable lt = new LootTable();
@@ -32,9 +34,11 @@ selects that item will reduce its quantity by 1.
 Items are built using the included Loot class and accept a string name, int quantity,
 and float weight.
 
+## Inventory.cs
+
 Inventory.cs is used to store a list of Loot objects the player has found with `LootTable.Choose()`
 
-## Example
+### Example
 
 ```c#
 Inventory inv = new Inventory();
