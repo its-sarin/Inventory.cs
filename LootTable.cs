@@ -2,7 +2,7 @@
  * Rebuilt in C# by Tony Recchia (@then00b)
  * 
  * Based on LootTable.js by John Watson (Copyright © 2015)
- * https://github.com/jotson/LootTable.js
+ * https://github.com/jotson/LootTable.js/blob/master/LootTable.js
  * 
  * Licensed under the terms of the MIT License
  * ---
@@ -21,9 +21,9 @@
  * lt.Add(new Loot("gold", 100));
  * 
  * Loot item = lt.Choose(); // most likely gold
- * string itemName = item.Name; // "gold"
  */
 
+using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
 
@@ -56,11 +56,13 @@ public class LootTable {
         this.table.Add(loot);
     }
 
-    /* Choose and returns a Loot object from the LootTable based on its weight. */
+    /* Choose a Loot object from the LootTable based on its weight. 
+     * Returns the string Name of the Loot
+     */
     public Loot Choose() {
         if (this.table.Count == 0) return null;
         
-        int i;        
+        int i;
         int totalWeight = 0;
         Loot v;
 

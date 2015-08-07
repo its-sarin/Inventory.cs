@@ -14,6 +14,7 @@
  * 
  */
 
+using UnityEngine;
 using System.Collections;
 
 public class Loot {
@@ -21,11 +22,19 @@ public class Loot {
 	private string name;
     private int weight;
     private float quantity;
+    private int id;
 
-    public Loot(string name, int weight = 1, float quantity = Mathf.Infinity) {
+    public Loot(string name, int id, int weight = 1, float quantity = Mathf.Infinity) {
         this.name = name;
+        this.id = id;
         this.weight = weight;
-        this.quantity = quantity == Mathf.Infinity ? quantity : Mathf.Floor(quantity);
+        // If quantity passed in is Infinity, set quantity to Infinity...
+        if (quantity == Mathf.Infinity) {
+            this.quantity = quantity;
+        } else {
+            // ...otherwise if quanity is -1, set it to Infinity or else round and set quantity
+            this.quantity = quantity == -1 ? Mathf.Infinity : Mathf.Round(quantity);
+        }        
     }
 
     public string Name {
@@ -41,6 +50,11 @@ public class Loot {
     public float Quantity {
         get { return quantity; }
         set { quantity = value; }
+    }
+
+    public int Id {
+        get { return id; }
+        set { id = value; }
     }
 
 }
