@@ -114,7 +114,7 @@ public class Inventory {
             if (list[i].Name == name) return true;
         }
 
-        return true;
+        return false;
     }
 
     public bool Contains(int id) {
@@ -125,7 +125,7 @@ public class Inventory {
             if (list[i].Id == id) return true;
         }
 
-        return true;
+        return false;
     }
 
     public Dictionary<Loot, int> Show() {
