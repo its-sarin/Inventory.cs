@@ -80,20 +80,22 @@ public class Inventory {
     }
 
     public int Count(string name) {
-        foreach (KeyValuePair<Loot, int> item in this.table) {
-            if (item.Key.Name == name) {
-                return item.Value;
-            }
+        List<Loot> list = new List<Loot>(this.table.Keys);
+        int c = list.Count;
+
+        for (int i = 0; i < c; i++) {
+            if (list[i].Name == name) return this.table[list[i]];
         }
 
         return 0;
     }
 
     public int Count(int id) {
-        foreach (KeyValuePair<Loot, int> item in this.table) {
-            if (item.Key.Id == id) {
-                return item.Value;
-            }
+        List<Loot> list = new List<Loot>(this.table.Keys);
+        int c = list.Count;
+
+        for (int i = 0; i < c; i++) {
+            if (list[i].Id == id) return this.table[list[i]];
         }
 
         return 0;
@@ -105,23 +107,25 @@ public class Inventory {
     }
 
     public bool Contains(string name) {
-        foreach (KeyValuePair<Loot, int> item in this.table) {
-            if (item.Key.Name == name) {
-                return true;
-            }
+        List<Loot> list = new List<Loot>(this.table.Keys);
+        int c = list.Count;
+
+        for (int i = 0; i < c; i++) {
+            if (list[i].Name == name) return true;
         }
 
-        return false;
+        return true;
     }
 
     public bool Contains(int id) {
-        foreach (KeyValuePair<Loot, int> item in this.table) {
-            if (item.Key.Id == id) {
-                return true;
-            }
+        List<Loot> list = new List<Loot>(this.table.Keys);
+        int c = list.Count;
+
+        for (int i = 0; i < c; i++) {
+            if (list[i].Id == id) return true;
         }
 
-        return false;
+        return true;
     }
 
     public Dictionary<Loot, int> Show() {
