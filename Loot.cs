@@ -16,10 +16,12 @@
 
 using UnityEngine;
 using System.Collections;
+using System;
 
+[Serializable]
 public class Loot {
 
-	private string name;
+    private string name;
     private int weight;
     private float quantity;
     private int id;
@@ -34,27 +36,42 @@ public class Loot {
         } else {
             // ...otherwise if quanity is -1, set it to Infinity or else round and set quantity
             this.quantity = quantity == -1 ? Mathf.Infinity : Mathf.Round(quantity);
-        }        
+        }
     }
 
     public string Name {
-        get { return name; }
-        set { name = value; }
+        get { return this.name; }
+        set { this.name = value; }
     }
 
     public int Weight {
-        get { return weight; }
-        set { weight = value; }
+        get { return this.weight; }
+        set { this.weight = value; }
     }
 
     public float Quantity {
-        get { return quantity; }
-        set { quantity = value; }
+        get { return this.quantity; }
+        set { this.quantity = value; }
     }
 
     public int Id {
-        get { return id; }
-        set { id = value; }
+        get { return this.id; }
+        set { this.id = value; }
     }
 
+    public override bool Equals(object obj) {
+        if (GetHashCode() == obj.GetHashCode())
+            return true;
+        return false;
+    }
+
+    public override int GetHashCode() {
+        unchecked {
+            int hash = 47;
+
+            hash = hash * 227 + this.id.GetHashCode();
+
+            return hash;
+        }
+    }
 }

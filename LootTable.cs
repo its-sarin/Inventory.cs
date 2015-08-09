@@ -16,23 +16,29 @@
  * Example:
  *
  * LootTable lt = new LootTable();
- * lt.Add(new Loot("sword", 20));
- * lt.Add(new Loot("shield", 5));
- * lt.Add(new Loot("gold", 100));
+ * lt.Add(new Loot("sword", 0, 20));
+ * lt.Add(new Loot("shield", 1, 5));
+ * lt.Add(new Loot("gold", 2, 100));
  * 
  * Loot item = lt.Choose(); // most likely gold
  */
 
 using UnityEngine;
-using System.Collections;
 using System.Collections.Generic;
+using Random = UnityEngine.Random;
+using System;
 
+[Serializable]
 public class LootTable {
 
     private List<Loot> table;
 
     public LootTable() {
-        this.table = new List<Loot>();        
+        this.table = new List<Loot>();
+    }
+
+    public LootTable(List<Loot> list) {
+        this.table = list;
     }
 
     public void Clear() {
@@ -57,11 +63,11 @@ public class LootTable {
     }
 
     /* Choose a Loot object from the LootTable based on its weight. 
-     * Returns the string Name of the Loot
+     * Returns the chosen Loot item
      */
     public Loot Choose() {
         if (this.table.Count == 0) return null;
-        
+
         int i;
         int totalWeight = 0;
         Loot v;

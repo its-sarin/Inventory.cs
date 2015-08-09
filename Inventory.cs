@@ -30,89 +30,103 @@
  * 
  */
 
-using UnityEngine;
-using System.Collections;
 using System.Collections.Generic;
+using System;
 
+[Serializable]
 public class Inventory {
 
-    private List<Loot> table;
+    private Dictionary<Loot, int> table;
 
     public Inventory() {
-        this.table = new List<Loot>();
+        this.table = new Dictionary<Loot, int>();
     }
 
-    // Clear the inventory
+    // [Clear] - Clear the inventory
     public void Clear() {
         this.table.Clear();
     }
 
-    // Add a piece of loot to inventory with an optional quantity. Returns the added Loot object.
+    // [Add] - Add a Loot item to inventory with an optional quantity. Returns the added Loot object.
     public Loot Add(Loot loot, int quantity = 1) {
-        if (quantity <= 1) {
-            this.table.Add(loot);
+        if (this.table.ContainsKey(loot)) {
+            this.table[loot] += quantity;
         } else {
-            for (int i = 0; i < quantity; i++) {
-                this.table.Add(loot);
-            }
-        }
-        
+            this.table.Add(loot, quantity);
+        }        
+
         return loot;
     }
 
-    // Remove a piece of loot from inventory
-    public void Remove(Loot loot) {
-        this.table.Remove(loot);
+    // [Remove] - Remove a Loot item from inventory
+    public void Remove(Loot loot, int quantity = 1) {
+        if (this.table.ContainsKey(loot)) {
+            if (this.table[loot] - quantity > 1) {
+                this.table[loot] -= quantity;
+            } else {
+                this.table.Remove(loot);                
+            }
+        }            
     }
 
-    /* [Count] - return the total quantity of this loot in inventory */
+    /* [Total] - returns the total number of items in inventory */
+    public int Total() {
+        return this.table.Count;
+    }
+
+    /* [Count] - returns the quanityt of a given item in inventory */
     public int Count(Loot loot) {
-        List<Loot> list;
-
-        list = this.table.FindAll(l => l == loot);
-
-        return list.Count;
+        return this.table[loot];
     }
 
     public int Count(string name) {
-        List<Loot> list;
+        foreach (KeyValuePair<Loot, int> item in this.table) {
+            if (item.Key.Name == name) {
+                return item.Value;
+            }
+        }
 
-        list = this.table.FindAll(l => l.Name == name);
-
-        return list.Count;
+        return 0;
     }
 
     public int Count(int id) {
-        List<Loot> list;
+        foreach (KeyValuePair<Loot, int> item in this.table) {
+            if (item.Key.Id == id) {
+                return item.Value;
+            }
+        }
 
-        list = this.table.FindAll(l => l.Id == id);
-
-        return list.Count;
+        return 0;
     }
-    
 
     /* [Contains] - return whether or not a piece of loot is in inventory */
     public bool Contains(Loot loot) {
-        return this.table.Contains(loot);
+        return this.table.ContainsKey(loot);
     }
 
     public bool Contains(string name) {
-        int c = this.table.Count;
-        for (int i = 0; i < c; i++) {
-            if (this.table[i].Name == name) {
+        foreach (KeyValuePair<Loot, int> item in this.table) {
+            if (item.Key.Name == name) {
                 return true;
             }
         }
+
         return false;
-    } 
+    }
 
     public bool Contains(int id) {
-        int c = this.table.Count;
-        for (int i = 0; i < c; i++) {
-            if (this.table[i].Id == id) {
+        foreach (KeyValuePair<Loot, int> item in this.table) {
+            if (item.Key.Id == id) {
                 return true;
             }
         }
+
         return false;
-    }    
+    }
+
+    public Dictionary<Loot, int> Show() {
+        return this.table;
+    }
+
+    
 }
