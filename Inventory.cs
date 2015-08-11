@@ -32,14 +32,19 @@
 
 using System.Collections.Generic;
 using System;
+using Mathf = UnityEngine.Mathf;
 
 [Serializable]
 public class Inventory {
 
     private Dictionary<Loot, int> table;
 
-    public Inventory() {
+    private float inventorySize;
+    private float lootLimit;
+
+    public Inventory(float inventorySize = Mathf.Infinity) {
         this.table = new Dictionary<Loot, int>();
+        this.inventorySize = inventorySize;
     }
 
     // [Clear] - Clear the inventory
@@ -48,25 +53,31 @@ public class Inventory {
     }
 
     // [Add] - Add a Loot item to inventory with an optional quantity. Returns the added Loot object.
-    public Loot Add(Loot loot, int quantity = 1) {
-        if (this.table.ContainsKey(loot)) {
+    public bool Add(Loot loot, int quantity = 1) {
+        if (this.table.ContainsKey(loot)) {            
             this.table[loot] += quantity;
-        } else {
+            return true;
+        } else if (this.table.Count < inventorySize) {
             this.table.Add(loot, quantity);
+            return true;
         }        
 
-        return loot;
+        return false;
     }
 
     // [Remove] - Remove a Loot item from inventory
-    public void Remove(Loot loot, int quantity = 1) {
+    public bool Remove(Loot loot, int quantity = 1) {
         if (this.table.ContainsKey(loot)) {
             if (this.table[loot] - quantity > 1) {
                 this.table[loot] -= quantity;
+                return true;
             } else {
-                this.table.Remove(loot);                
+                this.table.Remove(loot);
+                return true;         
             }
-        }            
+        }
+
+        return false;
     }
 
     /* [Total] - returns the total number of items in inventory */
