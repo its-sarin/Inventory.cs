@@ -16,9 +16,9 @@
  * LootTable lt = new LootTable();
  * Inventory inv = new Inventory();
  * 
- * lt.Add(new Loot("sword", 20));
- * lt.Add(new Loot("shield", 5));
- * lt.Add(new Loot("gold", 100));
+ * lt.Add(new Loot("sword", 0), 20);
+ * lt.Add(new Loot("shield", 1), 5);
+ * lt.Add(new Loot("gold", 2), 100);
  * 
  * Loot item = lt.Choose(); // most likely gold
  * 
@@ -85,12 +85,12 @@ public class Inventory {
         return this.table.Count;
     }
 
-    /* [Count] - returns the quanityt of a given item in inventory */
-    public int Count(Loot loot) {
+    /* [Quantity] - returns the quantity of a given item in inventory */
+    public int Quantity(Loot loot) {
         return this.table[loot];
     }
 
-    public int Count(string name) {
+    public int Quantity(string name) {
         List<Loot> list = new List<Loot>(this.table.Keys);
         int c = list.Count;
 
@@ -101,7 +101,7 @@ public class Inventory {
         return 0;
     }
 
-    public int Count(int id) {
+    public int Quantity(int id) {
         List<Loot> list = new List<Loot>(this.table.Keys);
         int c = list.Count;
 

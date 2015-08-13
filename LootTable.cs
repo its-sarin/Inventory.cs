@@ -16,9 +16,9 @@
  * Example:
  *
  * LootTable lt = new LootTable();
- * lt.Add(new Loot("sword", 0, 20));
- * lt.Add(new Loot("shield", 1, 5));
- * lt.Add(new Loot("gold", 2, 100));
+ * lt.Add(new Loot("sword", 0), 20);
+ * lt.Add(new Loot("shield", 1), 5);
+ * lt.Add(new Loot("gold", 2), 100);
  * 
  * Loot item = lt.Choose(); // most likely gold
  */
@@ -31,14 +31,11 @@ using System;
 [Serializable]
 public class LootTable {
 
-    private List<Loot> table;
+    //private List<Loot> table;
+    private Dictionary<Loot, float> table;
 
     public LootTable() {
-        this.table = new List<Loot>();
-    }
-
-    public LootTable(List<Loot> list) {
-        this.table = list;
+        this.table = new Dictionary<Loot, float>();
     }
 
     public void Clear() {
@@ -55,11 +52,19 @@ public class LootTable {
      * selects that item will reduce its quantity by 1.
      *
      * 
-     * new Loot(string name, int weight, float quantity);
+     * new LootTable().Add(new Loot(string name, int weight), 2);
      */
 
-    public void Add(Loot loot) {
-        this.table.Add(loot);
+    public LootTable Add(Loot loot, float quantity = Mathf.Infinity) {
+        // If quantity is not Infinity, if value is 0 or less, set to Infinity. 
+        // Otherwise round the quantity to ensure whole numbers and continue.
+        if (quantity != Mathf.Infinity) {
+            quantity = quantity <= 0 ? Mathf.Infinity : Mathf.Round(quantity);
+        }
+
+        this.table.Add(loot, quantity);
+
+        return this;
     }
 
     /* Choose a Loot object from the LootTable based on its weight. 
@@ -68,14 +73,16 @@ public class LootTable {
     public Loot Choose() {
         if (this.table.Count == 0) return null;
 
+        List<Loot> list = new List<Loot>(this.table.Keys);
+        int c = list.Count;
         int i;
         int totalWeight = 0;
-        Loot v;
+        Loot loot;
 
-        for (i = 0; i < this.table.Count; i++) {
-            v = this.table[i];
-            if (v.Quantity > 0) {
-                totalWeight += v.Weight;
+        for (i = 0; i < c; i++) {
+            loot = list[i];
+            if (this.table[loot] > 0) {
+                totalWeight += loot.Weight;
             }
         }
 
@@ -83,19 +90,19 @@ public class LootTable {
         int weight = 0;
         float randomNumber = Mathf.Floor(Random.value * totalWeight + 1);
 
-        for (i = 0; i < this.table.Count; i++) {
-            v = this.table[i];
-            if (v.Quantity <= 0) continue;
+        for (i = 0; i < c; i++) {
+            loot = list[i];
+            if (this.table[loot] <= 0) continue;
 
-            weight += v.Weight;
+            weight += loot.Weight;
             if (randomNumber <= weight) {
                 choice = i;
                 break;
             }
         }
 
-        Loot chosenItem = this.table[choice];
-        this.table[choice].Quantity--;
+        Loot chosenItem = list[choice];
+        this.table[list[choice]]--;
 
         return chosenItem;
     }

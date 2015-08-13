@@ -26,17 +26,10 @@ public class Loot {
     private float quantity;
     private int id;
 
-    public Loot(string name, int id, int weight = 1, float quantity = Mathf.Infinity) {
+    public Loot(string name, int id, int weight = 1) {
         this.name = name;
         this.id = id;
         this.weight = weight;
-        // If quantity passed in is Infinity, set quantity to Infinity...
-        if (quantity == Mathf.Infinity) {
-            this.quantity = quantity;
-        } else {
-            // ...otherwise if quanity is -1, set it to Infinity or else round and set quantity
-            this.quantity = quantity == -1 ? Mathf.Infinity : Mathf.Round(quantity);
-        }
     }
 
     public string Name {
@@ -47,11 +40,6 @@ public class Loot {
     public int Weight {
         get { return this.weight; }
         set { this.weight = value; }
-    }
-
-    public float Quantity {
-        get { return this.quantity; }
-        set { this.quantity = value; }
     }
 
     public int Id {
