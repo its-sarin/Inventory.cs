@@ -27,9 +27,9 @@ namespace LootSystem {
         private LootType lootType;
 
         // Change these to whatever suits your game
-        public enum LootType { material, equipment, consumable, block, upgrade, relic };
+        public enum LootType { ingredient, equipment, consumable, block, upgrade, relic, trinket };
 
-        public Loot(string name, int id, int weight = 1, LootType lootType = LootType.material) {
+        public Loot(string name, int id, int weight = 1, LootType lootType = LootType.ingredient) {
             this.name = name;
             this.id = id;
             this.weight = weight;

@@ -82,6 +82,38 @@ namespace LootSystem {
             return false;
         }
 
+        public bool Remove(string name, int quantity = 1) {
+            Loot loot = this.Loot(name);
+
+            if (this.table.ContainsKey(loot)) {
+                if (this.table[loot] - quantity > 1) {
+                    this.table[loot] -= quantity;
+                    return true;
+                } else {
+                    this.table.Remove(loot);
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        public bool Remove(int id, int quantity = 1) {
+            Loot loot = this.Loot(id);
+
+            if (this.table.ContainsKey(loot)) {
+                if (this.table[loot] - quantity > 1) {
+                    this.table[loot] -= quantity;
+                    return true;
+                } else {
+                    this.table.Remove(loot);
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
         /* [Total] - returns the total number of items in inventory */
         public int Total() {
             return this.table.Count;
@@ -141,10 +173,31 @@ namespace LootSystem {
             return false;
         }
 
-        public Dictionary<Loot, int> Contents {
-            get { return this.table; }
+        // [Loot] - Returns Loot object by id or string
+        public Loot Loot(string name) {
+            List<Loot> list = new List<Loot>(this.table.Keys);
+            int c = list.Count;
+
+            for (int i = 0; i < c; i++) {
+                if (list[i].Name == name) return list[i];
+            }
+
+            return null;
         }
 
+        public Loot Loot(int id) {
+            List<Loot> list = new List<Loot>(this.table.Keys);
+            int c = list.Count;
 
+            for (int i = 0; i < c; i++) {
+                if (list[i].Id == id) return list[i];
+            }
+
+            return null;
+        }
+
+        public Dictionary<Loot, int> Contents {
+            get { return this.table; }
+        }        
     }
 }
