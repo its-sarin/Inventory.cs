@@ -30,174 +30,400 @@
  * 
  */
 
+using UnityEngine;
 using System.Collections.Generic;
 using System;
 using Mathf = UnityEngine.Mathf;
 
 namespace LootSystem {
 
+    public class GridVector {
+        public int x; public int y;
+
+        public GridVector(int x, int y) {
+            this.x = x;
+            this.y = y;
+        }
+    }
+
     [Serializable]
     public class Inventory {
 
-        private Dictionary<Loot, int> table;
+        // The inventory is a two dimensional array of Loot, quantity Dictionaries.
+        // This allows for multiple stacks of the same Loot item inside of one Inventory.
+        private Dictionary<Loot, int>[,] grid;
 
-        private float inventorySize;
-        private float lootLimit;
+        private int rowLength = 5;
 
-        public Inventory(float inventorySize = Mathf.Infinity) {
-            this.table = new Dictionary<Loot, int>();
+        // The total number of grid cells in the inventory
+        private int inventorySize;
+        // The number of duplicate items allowed in one grid cell
+        private float stackLimit;
+
+        // Inventory size should be a multiple of rowLength
+        public Inventory(int inventorySize = 10, float stackLimit = Mathf.Infinity) {
+            grid = new Dictionary<Loot, int>[rowLength, inventorySize / rowLength];
             this.inventorySize = inventorySize;
-        }
+            this.stackLimit = stackLimit;
+        }        
 
-        // [Clear] - Clear the inventory
+        // [Clear] - Clears the inventory
         public void Clear() {
-            this.table.Clear();
+            int xLength = grid.GetLength(0);
+            int yLength = grid.GetLength(1);
+
+            for (int x = 0; x < xLength; x++) {
+                for (int y = 0; y < yLength; y++) {
+                    grid[x, y].Clear();
+                }
+            }
         }
 
         // [Add] - Add a Loot item to inventory with an optional quantity. Returns the added Loot object.
-        public bool Add(Loot loot, int quantity = 1) {
-            if (this.table.ContainsKey(loot)) {
-                this.table[loot] += quantity;
-                return true;
-            } else if (this.table.Count < inventorySize) {
-                this.table.Add(loot, quantity);
-                return true;
+        public Inventory Add(Loot loot, int quantity = 1) {
+            GridVector vStack = FindFreeStack(loot);
+            GridVector vEmpty = FindEmptyCell();
+
+            if (vEmpty == null && vStack == null)
+                return this;
+
+            if (loot.Stackable && vStack != null) {
+                int x = vStack.x;
+                int y = vStack.y;
+
+                if ((grid[x, y][loot] + quantity) <= stackLimit) {
+                    grid[x, y][loot] += quantity;
+
+                    return this;
+                } else {
+                    int added = ((int)stackLimit - grid[x, y][loot]);
+                    grid[x, y][loot] += added;
+                    quantity -= added;
+
+                    Add(loot, quantity);
+                    return this;
+                }
+            } else if (vEmpty != null) {
+                int x = vEmpty.x;
+                int y = vEmpty.y;
+
+                grid[x, y] = new Dictionary<Loot, int>(1);
+
+                if (quantity <= stackLimit) {
+                    grid[x, y].Add(loot, quantity);
+
+                    return this;
+                } else {
+                    int added = (int)stackLimit;
+                    grid[x, y].Add(loot, added);
+                    quantity -= added;
+
+                    Add(loot, quantity);
+
+                    return this;
+                }
             }
 
-            return false;
+            return this;
         }
 
         // [Remove] - Remove a Loot item from inventory
-        public bool Remove(Loot loot, int quantity = 1) {
-            if (this.table.ContainsKey(loot)) {
-                if (this.table[loot] - quantity > 1) {
-                    this.table[loot] -= quantity;
-                    return true;
+        public Inventory Remove(Loot loot, int quantity = 1) {
+            GridVector vStack = FindAnyStack(loot);
+
+            if (quantity <= 0 || vStack == null) {
+                return this;
+            } else {
+                int x = vStack.x;
+                int y = vStack.y;
+
+                if ((grid[x, y][loot] - quantity) > 0) {
+                    grid[x, y][loot] -= quantity;
+
+                    return this;
                 } else {
-                    this.table.Remove(loot);
-                    return true;
+                    int removed = grid[x, y][loot];
+                    grid[x, y] = null;
+                    quantity -= removed;
+
+                    Remove(loot, quantity);
+
+                    return this;
+                }
+            }
+        }
+
+        public Inventory Remove(int id, int quantity = 1) {
+            Loot loot = GetLoot(id);
+
+            if (loot == null)
+                return this;
+
+            return Remove(loot, quantity);
+        }
+
+        public Inventory Remove(string name, int quantity = 1) {
+            Loot loot = GetLoot(name);
+
+            if (loot == null)
+                return this;
+
+            return Remove(loot, quantity);
+        }
+
+        /* [FindEmptyStack] - Finds the next available open grid cell, returns coordinates */
+        public GridVector FindEmptyCell() {
+            int xLength = grid.GetLength(0);
+            int yLength = grid.GetLength(1);
+
+            for (int x = 0; x < xLength; x++) {
+                for (int y = 0; y < yLength; y++) {
+                    if (grid[x, y] == null)
+                        return new GridVector(x, y);
                 }
             }
 
-            return false;
+            return null;
         }
 
-        public bool Remove(string name, int quantity = 1) {
-            Loot loot = this.Loot(name);
+        /* [FindFreeStack] - Finds the first available open stack of Loot items, returns coordinates */
+        public GridVector FindFreeStack(Loot loot) {
+            int xLength = grid.GetLength(0);
+            int yLength = grid.GetLength(1);
 
-            if (this.table.ContainsKey(loot)) {
-                if (this.table[loot] - quantity > 1) {
-                    this.table[loot] -= quantity;
-                    return true;
-                } else {
-                    this.table.Remove(loot);
-                    return true;
+            for (int x = 0; x < xLength; x++) {
+                for (int y = 0; y < yLength; y++) {
+                    if (grid[x, y] != null && grid[x, y].ContainsKey(loot)) {
+                        if (grid[x, y][loot] < stackLimit)
+                            return new GridVector(x, y);
+                    }
+
                 }
             }
 
-            return false;
+            return null;
         }
 
-        public bool Remove(int id, int quantity = 1) {
-            Loot loot = this.Loot(id);
+        /* [FindAnyStack] - Finds the first available stack of a given Loot item, returns coordinates */
+        public GridVector FindAnyStack(Loot loot) {
+            int xLength = grid.GetLength(0);
+            int yLength = grid.GetLength(1);
 
-            if (this.table.ContainsKey(loot)) {
-                if (this.table[loot] - quantity > 1) {
-                    this.table[loot] -= quantity;
-                    return true;
-                } else {
-                    this.table.Remove(loot);
-                    return true;
+            for (int x = 0; x < xLength; x++) {
+                for (int y = 0; y < yLength; y++) {
+                    if (grid[x, y] != null && grid[x, y].ContainsKey(loot)) {
+                        return new GridVector(x, y);
+                    }
+
                 }
             }
 
-            return false;
+            return null;
         }
+
+        /* [MoveStack] - Moves a stack from a given position to a destination position, returns that stack */
+        public Dictionary<Loot, int> MoveStack(GridVector from, GridVector to) {
+            Dictionary<Loot, int> originStack = grid[from.x, from.y];
+            Dictionary<Loot, int> destinationStack;            
+
+            if (!CellEmpty(to)) {
+                destinationStack = grid[to.x, to.y];
+                grid[from.x, from.y] = destinationStack;
+            } else {
+                ClearCell(from);
+            }
+
+            grid[to.x, to.y] = originStack;
+
+            return originStack;
+        }
+
+        /* [ClearCell] - Clears the contents of a given cell, returns that cell */
+        public GridVector ClearCell(GridVector cell) {
+            grid[cell.x, cell.y] = null;
+
+            return cell;
+        }
+
+        /* [IsCellEmpty] - Returns true or false if given cell is empty */
+        public bool CellEmpty(GridVector gridVector) {
+            return grid[gridVector.x, gridVector.y] == null;
+        }
+
+        /* [FreeCells] - returns how many Inventory cells are currently empty */
+        public int FreeCells() {
+            int xLength = grid.GetLength(0);
+            int yLength = grid.GetLength(1);
+            int acc = 0;
+
+            for (int x = 0; x < xLength; x++) {
+                for (int y = 0; y < yLength; y++) {
+                    if (grid[x, y] != null) {
+                        acc++;
+                    }
+                }
+            }
+
+            return inventorySize - acc;
+        }
+
 
         /* [Total] - returns the total number of items in inventory */
         public int Total() {
-            return this.table.Count;
+            int xLength = grid.GetLength(0);
+            int yLength = grid.GetLength(1);
+            int acc = 0;
+
+            for (int x = 0; x < xLength; x++) {
+                for (int y = 0; y < yLength; y++) {
+                    if (grid[x, y] != null) {
+                        List<int> list = new List<int>(grid[x, y].Values);
+                        for (int i = 0; i < list.Count; i++) {
+                            acc += list[i];
+                        }
+                    }
+                }
+            }
+
+            return acc;
         }
 
         /* [Quantity] - returns the quantity of a given item in inventory */
         public int Quantity(Loot loot) {
-            return this.table[loot];
-        }
+            int xLength = grid.GetLength(0);
+            int yLength = grid.GetLength(1);
+            int acc = 0;
 
-        public int Quantity(string name) {
-            List<Loot> list = new List<Loot>(this.table.Keys);
-            int c = list.Count;
-
-            for (int i = 0; i < c; i++) {
-                if (list[i].Name == name) return this.table[list[i]];
+            for (int x = 0; x < xLength; x++) {
+                for (int y = 0; y < yLength; y++) {
+                    if (grid[x, y] != null && grid[x, y].ContainsKey(loot)) {
+                        acc += grid[x, y][loot];
+                    }
+                }
             }
 
-            return 0;
+            return acc;
         }
 
         public int Quantity(int id) {
-            List<Loot> list = new List<Loot>(this.table.Keys);
-            int c = list.Count;
+            int xLength = grid.GetLength(0);
+            int yLength = grid.GetLength(1);
+            int acc = 0;
+            Loot loot = GetLoot(id);
 
-            for (int i = 0; i < c; i++) {
-                if (list[i].Id == id) return this.table[list[i]];
+            if (loot == null)
+                return acc;
+
+            for (int x = 0; x < xLength; x++) {
+                for (int y = 0; y < yLength; y++) {
+                    if (grid[x, y] != null && grid[x, y].ContainsKey(loot)) {
+                        acc += grid[x, y][loot];
+                    }
+                }
             }
 
-            return 0;
+            return acc;
+        }
+
+        public int Quantity(string name) {
+            int xLength = grid.GetLength(0);
+            int yLength = grid.GetLength(1);
+            int acc = 0;
+            Loot loot = GetLoot(name);
+
+            if (loot == null)
+                return acc;
+
+            for (int x = 0; x < xLength; x++) {
+                for (int y = 0; y < yLength; y++) {
+                    if (grid[x, y] != null && grid[x, y].ContainsKey(loot)) {
+                        acc += grid[x, y][loot];
+                    }
+                }
+            }
+
+            return acc;
         }
 
         /* [Contains] - return whether or not a piece of loot is in inventory */
         public bool Contains(Loot loot) {
-            return this.table.ContainsKey(loot);
-        }
+            int xLength = grid.GetLength(0);
+            int yLength = grid.GetLength(1);
 
-        public bool Contains(string name) {
-            List<Loot> list = new List<Loot>(this.table.Keys);
-            int c = list.Count;
-
-            for (int i = 0; i < c; i++) {
-                if (list[i].Name == name) return true;
+            for (int x = 0; x < xLength; x++) {
+                for (int y = 0; y < yLength; y++) {
+                    if (grid[x, y] != null && grid[x, y].ContainsKey(loot)) {
+                        return true;
+                    }
+                }
             }
 
             return false;
         }
 
         public bool Contains(int id) {
-            List<Loot> list = new List<Loot>(this.table.Keys);
-            int c = list.Count;
+            int xLength = grid.GetLength(0);
+            int yLength = grid.GetLength(1);
+            Loot loot = GetLoot(id);
 
-            for (int i = 0; i < c; i++) {
-                if (list[i].Id == id) return true;
+            if (loot == null)
+                return false;
+
+            for (int x = 0; x < xLength; x++) {
+                for (int y = 0; y < yLength; y++) {
+                    if (grid[x, y] != null && grid[x, y].ContainsKey(loot))
+                        return true;
+                }
             }
 
             return false;
         }
 
-        // [Loot] - Returns Loot object by id or string
-        public Loot Loot(string name) {
-            List<Loot> list = new List<Loot>(this.table.Keys);
-            int c = list.Count;
+        /* [GetLoot] - Returns Loot object by id or string */
+        public Loot GetLoot(string name) {
+            int xLength = grid.GetLength(0);
+            int yLength = grid.GetLength(1);
 
-            for (int i = 0; i < c; i++) {
-                if (list[i].Name == name) return list[i];
+            for (int x = 0; x < xLength; x++) {
+                for (int y = 0; y < yLength; y++) {
+                    if (grid[x, y] != null) {
+                        List<Loot> list = new List<Loot>(grid[x, y].Keys);
+                        int c = list.Count;
+
+                        for (int i = 0; i < c; i++) {
+                            if (list[i].Name == name)
+                                return list[i];
+                        }
+                    }
+                }
             }
 
             return null;
         }
 
-        public Loot Loot(int id) {
-            List<Loot> list = new List<Loot>(this.table.Keys);
-            int c = list.Count;
+        public Loot GetLoot(int id) {
+            int xLength = grid.GetLength(0);
+            int yLength = grid.GetLength(1);
 
-            for (int i = 0; i < c; i++) {
-                if (list[i].Id == id) return list[i];
+            for (int x = 0; x < xLength; x++) {
+                for (int y = 0; y < yLength; y++) {
+                    if (grid[x, y] != null) {
+                        List<Loot> list = new List<Loot>(grid[x, y].Keys);
+                        int c = list.Count;
+                        
+                        for (int i = 0; i < c; i++) {
+                            if (list[i].Id == id)
+                                return list[i];
+                        }
+                    }
+                }
             }
 
             return null;
         }
 
-        public Dictionary<Loot, int> Contents {
-            get { return this.table; }
-        }        
+        public Dictionary<Loot, int>[,] Contents {
+            get { return grid; }
+        }
     }
 }

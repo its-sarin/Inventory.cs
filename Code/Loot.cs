@@ -24,21 +24,28 @@ namespace LootSystem {
         private string name;
         private int weight;
         private int id;
+        private bool stackable;
         private LootType lootType;
 
         // Change these to whatever suits your game
         public enum LootType { ingredient, equipment, consumable, block, upgrade, relic, trinket };
 
-        public Loot(string name, int id, int weight = 1, LootType lootType = LootType.ingredient) {
+        public Loot(string name, int id, int weight = 1, bool stackable = true, LootType lootType = LootType.ingredient) {
             this.name = name;
             this.id = id;
             this.weight = weight;
+            this.stackable = stackable;
             this.lootType = lootType;
         }
 
         public string Name {
             get { return this.name; }
             set { this.name = value; }
+        }        
+
+        public int Id {
+            get { return this.id; }
+            set { this.id = value; }
         }
 
         public int Weight {
@@ -46,9 +53,9 @@ namespace LootSystem {
             set { this.weight = value; }
         }
 
-        public int Id {
-            get { return this.id; }
-            set { this.id = value; }
+        public bool Stackable {
+            get { return this.stackable; }
+            set { this.stackable = value; }
         }
 
         public LootType Type {
