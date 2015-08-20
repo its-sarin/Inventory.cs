@@ -53,7 +53,7 @@ namespace LootSystem {
         // This allows for multiple stacks of the same Loot item inside of one Inventory.
         private Dictionary<Loot, int>[,] grid;
 
-        private int rowLength = 5;
+        private int rowLength;
 
         // The total number of grid cells in the inventory
         private int inventorySize;
@@ -61,10 +61,12 @@ namespace LootSystem {
         private float stackLimit;
 
         // Inventory size should be a multiple of rowLength
-        public Inventory(int inventorySize = 10, float stackLimit = Mathf.Infinity) {
-            grid = new Dictionary<Loot, int>[rowLength, inventorySize / rowLength];
+        public Inventory(int inventorySize = 10, int rowLength = 5, float stackLimit = Mathf.Infinity) {
             this.inventorySize = inventorySize;
+            this.rowLength = rowLength;
             this.stackLimit = stackLimit;
+
+            grid = new Dictionary<Loot, int>[rowLength, inventorySize / rowLength];            
         }        
 
         // [Clear] - Clears the inventory
@@ -99,9 +101,8 @@ namespace LootSystem {
                     int added = ((int)stackLimit - grid[x, y][loot]);
                     grid[x, y][loot] += added;
                     quantity -= added;
-
-                    Add(loot, quantity);
-                    return this;
+                    
+                    return Add(loot, quantity);
                 }
             } else if (vEmpty != null) {
                 int x = vEmpty.x;
@@ -118,9 +119,7 @@ namespace LootSystem {
                     grid[x, y].Add(loot, added);
                     quantity -= added;
 
-                    Add(loot, quantity);
-
-                    return this;
+                    return Add(loot, quantity);
                 }
             }
 
@@ -146,9 +145,7 @@ namespace LootSystem {
                     grid[x, y] = null;
                     quantity -= removed;
 
-                    Remove(loot, quantity);
-
-                    return this;
+                    return Remove(loot, quantity);
                 }
             }
         }
@@ -219,6 +216,11 @@ namespace LootSystem {
             }
 
             return null;
+        }
+
+        /* [GetStack] - gets stack (if there is one) at a specified GridVector */
+        public Dictionary<Loot, int> GetStack(GridVector pos) {
+            return grid[pos.x, pos.y];
         }
 
         /* [MoveStack] - Moves a stack from a given position to a destination position, returns that stack */
