@@ -48,8 +48,8 @@ Loot wood = new Loot("Wood", 3); // Will be both stackable and of LootType 'ingr
 ## Inventory.cs
 
 Inventory.cs is used to store a list of Loot objects such as ones the player has found with `LootTable.Choose()`.
-It stores items in Dictionaries (Loot, quantity) inside a grid-based two-dimensional array. The array size is customizable
-and each cell represents one grid in a UI.
+It stores items in InventorySlots (wrapper class containing properties: loot, amount) inside a grid-based 
+two-dimensional array. The array size is customizable and each cell represents one grid in a UI.
 
 ### Example
 
@@ -61,7 +61,7 @@ and each cell represents one grid in a UI.
 Inventory myInventory = new Inventory();
 
 Loot sword = new Loot("Sword", 1);
-sword.Stackable = false;
+sword.StackLimit = 1;
 sword.Type = LootType.equipment;
 
 // Adding one item
@@ -110,13 +110,13 @@ selects that item will reduce its quantity by 1.
 LootTable myLootTable = new LootTable();
 
 // Adds a new "sword" Loot object to the LootTable with a set quantity of 1
-myLootTable.Add(new Loot("sword", 20), 1);
+myLootTable.Add(new Loot("sword", 1, Rarity.rare), 1);
 // Adds a new "shield" Loot object to the LootTable with a set quantity of 2
-myLootTable.Add(new Loot("shield", 5), 2);
+myLootTable.Add(new Loot("shield", 1, Rarity.uncommon), 2);
 // Adds a new "gold" Loot object to the LootTable with no set quantity (quantity will be Infinity)
-myLootTable.Add(new Loot("gold", 100));
+myLootTable.Add(new Loot("gold", 3, Rarity.common));
  
-Loot item = myLootTable.Choose(); // most likely gold
+Loot item = myLootTable.Choose(); // most likely gold based on Rarity
 
 // Loot randomly chosen from the LootTable can be added directly to the Inventory
 myInventory.Add(myLootTable.Choose()); // Will most likely add "gold" to the Inventory
