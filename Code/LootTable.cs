@@ -32,8 +32,7 @@ namespace LootSystem {
 
     [Serializable]
     public class LootTable {
-
-        //private List<Loot> table;
+      
         private Dictionary<Loot, float> table;
 
         public LootTable() {
@@ -84,7 +83,7 @@ namespace LootSystem {
             for (i = 0; i < c; i++) {
                 loot = list[i];
                 if (this.table[loot] > 0) {
-                    totalWeight += loot.Weight;
+                    totalWeight += (int)loot.LootRarity;
                 }
             }
 
@@ -96,7 +95,7 @@ namespace LootSystem {
                 loot = list[i];
                 if (this.table[loot] <= 0) continue;
 
-                weight += loot.Weight;
+                weight += (int)loot.LootRarity;
                 if (randomNumber <= weight) {
                     choice = i;
                     break;
