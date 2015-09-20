@@ -16,20 +16,22 @@ defining a type of Loot.
 ### Example 
 
 ```c#
-// A Loot item requires at least a string Name and an int Id.
-// It can optionally be set with a Rarity rarity (default Rarity.common), int stackLimit (default 99),
-// LootType lootType (default LootType.ingredient)
-//
-// Rarity represents the relative likelihood that it will be chosen when using LootTable.cs
-//
-// stackLimit represents how many of this item can be stacked in one InventorySlot
-//
-// LootType is an enum that contains what type of Loot this Loot object is (e.g. 'equipment')
+/* 
+ A Loot item requires at least a string Name and an int Id.
+ It can optionally be set with a Rarity rarity (default Rarity.common), int stackLimit (default 99),
+ LootType lootType (default LootType.ingredient)
+
+ Rarity represents the relative likelihood that it will be chosen when using LootTable.cs
+
+ stackLimit represents how many of this item can be stacked in one InventorySlot
+
+ LootType is an enum that contains what type of Loot this Loot object is (e.g. 'equipment')
+ */
 
 // Creates a new "Sword" Loot object with an Id of 1
 Loot sword = new Loot("Sword", 1);
-// Sets stackable to false, this item will occupy one cell for every 1 item
-sword.Stackable = false;
+// Sets stackLimit to 1, this item will occupy one InventorySlot for every 1 item
+sword.StackLimit = 1;
 // Sets its LootType to 'equipment'
 sword.Type = LootType.equipment;
 
