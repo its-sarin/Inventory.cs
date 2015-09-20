@@ -17,13 +17,12 @@ defining a type of Loot.
 
 ```c#
 // A Loot item requires at least a string Name and an int Id.
-// It can optionally be set with an int weight (default 1), bool stackable (default true),
-// and LootType lootType (default 'ingredient')
+// It can optionally be set with a Rarity rarity (default Rarity.common), int stackLimit (default 99),
+// LootType lootType (default LootType.ingredient)
 //
-// weight represents the relative likelihood that it will be chosen when using LootTable.cs
+// Rarity represents the relative likelihood that it will be chosen when using LootTable.cs
 //
-// stackable represents if the item can be stacked in the Inventory
-// or if each duplicate takes up one grid space
+// stackLimit represents how many of this item can be stacked in one InventorySlot
 //
 // LootType is an enum that contains what type of Loot this Loot object is (e.g. 'equipment')
 
@@ -34,8 +33,8 @@ sword.Stackable = false;
 // Sets its LootType to 'equipment'
 sword.Type = LootType.equipment;
 
-// Creates a new "Potion" Loot object with an Id of 2, a weight of 1, is stackable, and of LootType 'consumable
-Loot potion = new Loot("Potion", 2, 1, true, LootType.consumable);
+// Creates a new "Potion" Loot object with an Id of 2, a rarity of Rarity.rare, is stackable, and of LootType.consumable
+Loot potion = new Loot("Potion", 2, Rarity.rare, 99, LootType.consumable);
 
 // Creates a new "Wood" Loot object with an Id of 3
 Loot wood = new Loot("Wood", 3); // Will be both stackable and of LootType 'ingredient' by default
@@ -52,8 +51,8 @@ and each cell represents one grid in a UI.
 ### Example
 
 ```c#
-// Inventory constructor has three optional parameters: inventorySize (default 10), 
-// rowLength (default 5) and stackLimit (default Infinity). inventorySize should be evenly divisible by rowLength.
+// Inventory constructor has two optional parameters: inventorySize (default 10) and rowLength (default 5)
+// inventorySize should be evenly divisible by rowLength.
 
 // Creates a new Inventory with default sizes. By default, this Inventory will be 2 rows of 5 cells (equaling inventorySize 10)
 Inventory myInventory = new Inventory();
