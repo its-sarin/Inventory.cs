@@ -33,7 +33,8 @@ sword.Stackable = false;
 // Sets its LootType to 'equipment'
 sword.Type = LootType.equipment;
 
-// Creates a new "Potion" Loot object with an Id of 2, a rarity of Rarity.rare, is stackable, and of LootType.consumable
+// Creates a new "Potion" Loot object with an Id of 2, a rarity of Rarity.rare, 
+// can stack 99 per InventorySlot, and of LootType.consumable
 Loot potion = new Loot("Potion", 2, Rarity.rare, 99, LootType.consumable);
 
 // Creates a new "Wood" Loot object with an Id of 3
